@@ -13,54 +13,6 @@ class Test extends Model {}
 class MediaStorageTest extends TestCase
 {
 
-    public function testCropImage()
-    {
-        $stored = Media::add($this->files[0])->create();
-
-        $media_id = $stored[0]->media_id;
-
-        $media = Media::id($media_id);
-        $disk = $media->disk();
-
-        $crop0 = $media->path();
-        $crop1 = $media->crop(300,300)->path();
-        $crop2 = $media->crop(500,500)->path();
-        $crop3 = $media->crop(250,0)->path();
-        $crop4 = $media->crop(0,350)->path();
-        $crop5 = $media->format('webp')->path();
-
-        Storage::disk($disk)->assertExists($crop0);
-        Storage::disk($disk)->assertExists($crop1);
-        Storage::disk($disk)->assertExists($crop2);
-        Storage::disk($disk)->assertExists($crop3);
-        Storage::disk($disk)->assertExists($crop4);
-        Storage::disk($disk)->assertExists($crop5);
-
-        $image1 = Image::make(Storage::disk($disk)->path($crop1));
-        $image2 = Image::make(Storage::disk($disk)->path($crop2));
-        $image3 = Image::make(Storage::disk($disk)->path($crop3));
-        $image4 = Image::make(Storage::disk($disk)->path($crop4));
-        $image5 = Image::make(Storage::disk($disk)->path($crop5));
-
-        $this->assertSame(300, $image1->width());
-        $this->assertSame(500, $image2->height());
-        $this->assertSame(250, $image3->width());
-        $this->assertSame(350, $image4->height());
-        $this->assertSame('image/webp', $image5->mime());
-
-        $deleted = $media->delete();
-
-        $this->assertTrue($deleted === true);
-
-        Storage::disk($disk)->assertMissing($crop0);
-        Storage::disk($disk)->assertMissing($crop1);
-        Storage::disk($disk)->assertMissing($crop2);
-        Storage::disk($disk)->assertMissing($crop3);
-        Storage::disk($disk)->assertMissing($crop4);
-        Storage::disk($disk)->assertMissing($crop5);
-
-    }
-
     public function testAddGetDeleteOneFileAsUploadFile()
     {
         $stored = Media::add($this->files[0])->create();
@@ -256,9 +208,9 @@ class MediaStorageTest extends TestCase
 
         $media = Media::collection('ordered-files')->get();
 
-        $media[0]->order = 106;
-        $media[1]->order = 105;
-        $media[2]->order = 104;
+        $media[0]->order(106);
+        $media[1]->order(105);
+        $media[2]->order(104);
 
         Media::save($media);
 
@@ -271,5 +223,77 @@ class MediaStorageTest extends TestCase
         Media::collection('ordered-files')->delete();
     }
 
+    public function testCropImage()
+    {
+        $stored = Media::add($this->files[0])->create();
 
+        $media_id = $stored[0]->media_id;
+
+        $media = Media::id($media_id);
+        $disk = $media->disk();
+
+        $crop0 = $media->path();
+        $crop1 = $media->crop(300,300)->path();
+        $crop2 = $media->crop(500,500)->path();
+        $crop3 = $media->crop(250,0)->path();
+        $crop4 = $media->crop(0,350)->path();
+        $crop5 = $media->format('webp')->path();
+
+        Storage::disk($disk)->assertExists($crop0);
+        Storage::disk($disk)->assertExists($crop1);
+        Storage::disk($disk)->assertExists($crop2);
+        Storage::disk($disk)->assertExists($crop3);
+        Storage::disk($disk)->assertExists($crop4);
+        Storage::disk($disk)->assertExists($crop5);
+
+        $image1 = Image::make(Storage::disk($disk)->path($crop1));
+        $image2 = Image::make(Storage::disk($disk)->path($crop2));
+        $image3 = Image::make(Storage::disk($disk)->path($crop3));
+        $image4 = Image::make(Storage::disk($disk)->path($crop4));
+        $image5 = Image::make(Storage::disk($disk)->path($crop5));
+
+        $this->assertSame(300, $image1->width());
+        $this->assertSame(500, $image2->height());
+        $this->assertSame(250, $image3->width());
+        $this->assertSame(350, $image4->height());
+        $this->assertSame('image/webp', $image5->mime());
+
+        $deleted = $media->delete();
+
+        $this->assertTrue($deleted === true);
+
+        Storage::disk($disk)->assertMissing($crop0);
+        Storage::disk($disk)->assertMissing($crop1);
+        Storage::disk($disk)->assertMissing($crop2);
+        Storage::disk($disk)->assertMissing($crop3);
+        Storage::disk($disk)->assertMissing($crop4);
+        Storage::disk($disk)->assertMissing($crop5);
+
+    }
+
+
+    public function testIfFilesExist()
+    {
+        $stored = Media::add($this->files[0])->create();
+
+        $media_id = $stored[0]->media_id;
+
+        $media = Media::id($media_id);
+        $disk = $media->disk();
+
+        $path1 = $media->crop(300,300)->path();
+        $path2 = $media->crop(250,0)->path();
+        $path3 = $media->format('webp')->path();
+
+        $this->assertTrue($media->exist());
+        $this->assertTrue($media->crop(300,300)->exist());
+        $this->assertTrue($media->crop(250,0)->exist());
+        $this->assertTrue($media->format('webp')->exist());
+
+        $deleted = $media->delete();
+
+        Storage::disk($disk)->assertMissing($path1);
+        Storage::disk($disk)->assertMissing($path2);
+        Storage::disk($disk)->assertMissing($path3);
+    }
 }

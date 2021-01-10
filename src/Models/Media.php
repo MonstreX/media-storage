@@ -61,6 +61,20 @@ class Media extends Model
         return $this;
     }
 
+    public function exist()
+    {
+        $path = $this->path;
+
+        if ($this->image['width'] || $this->image['height'] || $this->image['format']) {
+            $conversionData = $this->getConversionData($this->path);
+            $path = $conversionData['path'];
+        }
+
+        $this->resetConversions();
+
+        return $this->fileService->disk($this->disk)->exists($path);
+    }
+
     public function url()
     {
         return $this->fileService->url($this->path());
@@ -68,35 +82,21 @@ class Media extends Model
 
     /*
      * Get path to media file. If parameters passed will generate or return conversions.
-     *
      * $media->width(300)->height(400)->format('webp')->url();
      * $media->crop(300,0)->format('webp')->url();
-     * path(['format' => 'webp'])
-     *
-     */    public function path()
+     */
+    public function path()
     {
         // Case #1 - get original file path, no need conversions
         if (!$this->image['width'] && !$this->image['height'] && !$this->image['format']) {
             return $this->path;
         }
 
-        //"dirname" => "media/2021/01"
-        //"basename" => "avatar-19.jpg"
-        //"extension" => "jpg"
-        //"filename" => "avatar-19"
-        $path_info = pathinfo($this->path);
-
-        $conversionPartName = '-conv' .
-            ($this->image['width']? '-w' . $this->image['width'] : '') .
-            ($this->image['height']? '-h' . $this->image['height'] : '') .
-            '.' .
-            ($this->image['format']? $this->image['format'] : $path_info['extension']);
-
-        $conversionPath = $path_info['dirname'] . '/' . $path_info['filename'] . $conversionPartName;
+        $conversionData = $this->getConversionData($this->path);
 
         // Case #2 - get conversion file path if file already been converted
-        if ($this->fileService->disk($this->disk)->exists($conversionPath)) {
-            return $conversionPath;
+        if ($this->fileService->disk($this->disk)->exists($conversionData['path'])) {
+            return $conversionData['path'];
         }
 
         // Case #3 - create NEW conversion and save it
@@ -116,27 +116,44 @@ class Media extends Model
                 });
             }
 
-            $image->encode($this->image['format']?? $path_info['extension'], $this->image['quality']);
+            $image->encode($this->image['format']?? $conversionData['extension'], $this->image['quality']);
 
-            $this->fileService->disk($this->disk)->put($conversionPath, (string) $image, $this->disk);
+            $this->fileService->disk($this->disk)->put($conversionData['path'], (string) $image, $this->disk);
+
+            // Save new conversion to conversions list in media entry (in order the conversion file can be deleted with a media entry later)
+            $conversions = json_decode($this->conversions)?? [];
+
+            if (!in_array($conversionData['partName'], $conversions)) {
+                $conversions[] = $conversionData['partName'];
+                $this->update(['conversions' => json_encode($conversions)]);
+            }
 
         } catch (\Exception $e) {
             return $e->getMessage();
         }
 
-        // Save new conversion to conversions list in media entry (in order the conversion file can be deleted with media entry later)
-        $conversions = json_decode($this->conversions)?? [];
-
-        if (!in_array($conversionPartName, $conversions)) {
-            $conversions[] = $conversionPartName;
-            $this->update(['conversions' => json_encode($conversions)]);
-        }
-
         $this->resetConversions();
 
-        return $conversionPath;
+        return $conversionData['path'];
     }
 
+    private function getConversionData(string $path)
+    {
+        $path_info = pathinfo($path);
+
+        $conversionPartName = '-conv' .
+            ($this->image['width']? '-w' . $this->image['width'] : '') .
+            ($this->image['height']? '-h' . $this->image['height'] : '') .
+            '.' .
+            ($this->image['format']? $this->image['format'] : $path_info['extension']);
+
+        return [
+            'partName' => $conversionPartName,
+            'path' => $path_info['dirname'] . '/' . $path_info['filename'] . $conversionPartName,
+            'extension' => $path_info['extension'],
+        ];
+
+    }
 
 
     public function disk()
@@ -159,8 +176,11 @@ class Media extends Model
         return $this->size;
     }
 
-    public function order()
+    public function order(int $order = null)
     {
+        if ($order) {
+            $this->order = $order;
+        }
         return $this->order;
     }
 
