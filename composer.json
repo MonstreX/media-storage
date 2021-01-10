@@ -1,0 +1,42 @@
+{
+    "name": "monstrex/media-storage",
+    "description": "Media Storage",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Yuriy Ovdeyev",
+            "email": "fido6080net@gmail.com",
+            "homepage": "http://ss-dev.ru"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "ext-json": "*",
+        "intervention/image": "^2.5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.4@dev",
+        "orchestra/testbench": "^6.7.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "MonstreX\\MediaStorage\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MonstreX\\MediaStorage\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "MonstreX\\MediaStorage\\MediaStorageServiceProvider"
+            ],
+            "aliases": {
+                "Media": "MonstreX\\MediaStorage\\Facades\\Media"
+            }
+        }
+    }
+}

@@ -1,0 +1,7 @@
+# ignore jetbrains ide files
+.idea
+
+# ignore dependencies
+/node_modules
+/vendor
+
