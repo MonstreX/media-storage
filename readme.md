@@ -94,3 +94,6 @@ Media::model($user1)->collection('new-gallery')->delete()
 Media::deleteAll();
 ```
 
+## Testing
+
+All tests provided.
