@@ -1,7 +1,9 @@
 # Laravel Media Storage
 
-This package allow you to manage different media files in your project. The package was inspired by Spatie Medialibrary package. But this package also can handle files without binding to certain model's records. So you can use Spatie Medialibary way to store files or you can use independed media collection don't belong any models at all. Also the package can manipulate some image conversions.
+This laravel package allow you to manage different media files in your project. The package was inspired by Spatie Medialibrary package. But this package also can handle files without binding to certain model's records. So you can use Spatie Medialibary way to store files or you can use independed media collection don't belong any models at all. Also the package can manipulate some image conversions.
 
+## Requirements
+> Laravel 8.*
 
 ## Installing
 >composer require monstrex/media-storage
