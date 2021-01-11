@@ -44,7 +44,6 @@ class MediaStorageTest extends TestCase
         Storage::disk($disk)->assertMissing($path); // Should not exist (deleted with media entry)
     }
 
-
     public function testAddDeleteOneFileAsPath()
     {
         $stored = Media::add($this->files[0])->create();
@@ -199,7 +198,6 @@ class MediaStorageTest extends TestCase
         $this->assertTrue($media === 1);
     }
 
-
     public function testSaveOrder()
     {
         $files = [$this->files[3], $this->files[4], $this->files[5]];
@@ -271,7 +269,6 @@ class MediaStorageTest extends TestCase
 
     }
 
-
     public function testIfFilesExist()
     {
         $stored = Media::add($this->files[0])->create();
@@ -284,16 +281,19 @@ class MediaStorageTest extends TestCase
         $path1 = $media->crop(300,300)->path();
         $path2 = $media->crop(250,0)->path();
         $path3 = $media->format('webp')->path();
+        $path4 = $media->format('png')->path();
 
         $this->assertTrue($media->exist());
         $this->assertTrue($media->crop(300,300)->exist());
         $this->assertTrue($media->crop(250,0)->exist());
         $this->assertTrue($media->format('webp')->exist());
+        $this->assertTrue($media->format('png')->exist());
 
         $deleted = $media->delete();
 
         Storage::disk($disk)->assertMissing($path1);
         Storage::disk($disk)->assertMissing($path2);
         Storage::disk($disk)->assertMissing($path3);
+        Storage::disk($disk)->assertMissing($path4);
     }
 }

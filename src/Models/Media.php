@@ -3,7 +3,6 @@
 namespace MonstreX\MediaStorage\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 use MonstreX\MediaStorage\Services\FileService;
 use Intervention\Image\Facades\Image;
 use Storage;
@@ -13,6 +12,7 @@ use Str;
 class Media extends Model
 {
     protected $table = 'media';
+
     protected $guarded = [];
 
     protected ?FileService $fileService;
@@ -25,43 +25,56 @@ class Media extends Model
         $this->fileService = app(FileService::class);
     }
 
-    public function model(): MorphTo
-    {
-        return $this->morphTo();
-    }
-
-    public function width(int $width = 0)
+    /*
+     * Set Width for conversion
+     */
+    public function width(int $width = 0): Model
     {
         $this->image['width'] = $width;
         return $this;
     }
 
-    public function height(int $height = 0)
+    /*
+     * Set Height for conversion
+     */
+    public function height(int $height = 0): Model
     {
         $this->image['height'] = $height;
         return $this;
     }
 
-    public function crop(int $width = 0, int $height = 0)
+    /*
+     * Set width and height for crop conversion. One of parameters can be equal to 0
+     */
+    public function crop(int $width = 0, int $height = 0): Model
     {
         $this->image['width'] = $width;
         $this->image['height'] = $height;
         return $this;
     }
 
-    public function format(string $format = '')
+    /*
+     * Set new format for conversion
+     */
+    public function format(string $format = ''): Model
     {
         $this->image['format'] = $format;
         return $this;
     }
 
-    public function quality(int $quality = 75)
+    /*
+     * Set media file quality
+     */
+    public function quality(int $quality = 75): Model
     {
         $this->image['quality'] = $quality;
         return $this;
     }
 
-    public function exist()
+    /*
+     * Check if media file exist
+     */
+    public function exist(): bool
     {
         $path = $this->path;
 
@@ -75,22 +88,28 @@ class Media extends Model
         return $this->fileService->disk($this->disk)->exists($path);
     }
 
-    public function url()
+    /*
+     * Get Relative URL
+     */
+    public function url(): string
     {
         return $this->fileService->url($this->path());
     }
 
-    public function fullUrl()
+    /*
+     * Get Full URL
+     */
+    public function fullUrl(): string
     {
         return url($this->fileService->url($this->path()));
     }
 
     /*
-     * Get path to media file. If parameters passed will generate or return conversions.
+     * Get Path to media file. If parameters passed will generate or return conversions.
      * $media->width(300)->height(400)->format('webp')->url();
      * $media->crop(300,0)->format('webp')->url();
      */
-    public function path()
+    public function path(): string
     {
         // Case #1 - get original file path, no need conversions
         if (!$this->image['width'] && !$this->image['height'] && !$this->image['format']) {
@@ -142,7 +161,10 @@ class Media extends Model
         return $conversionData['path'];
     }
 
-    private function getConversionData(string $path)
+    /*
+     * Get conversion file name and path
+     */
+    private function getConversionData(string $path): array
     {
         $path_info = pathinfo($path);
 
@@ -157,31 +179,44 @@ class Media extends Model
             'path' => $path_info['dirname'] . '/' . $path_info['filename'] . $conversionPartName,
             'extension' => $path_info['extension'],
         ];
-
     }
 
-
-    public function disk()
+    /*
+     * Get disk name
+     */
+    public function disk(): string
     {
         return $this->disk;
     }
 
-    public function fileName()
+    /*
+     * Get file name and extension
+     */
+    public function fileName(): string
     {
         return $this->file_name;
     }
 
-    public function mime()
+    /*
+     * Get mime type
+     */
+    public function mime(): string
     {
         return $this->mime_type;
     }
 
-    public function size()
+    /*
+     * Get file size
+     */
+    public function size(): int
     {
         return $this->size;
     }
 
-    public function order(int $order = null)
+    /*
+     * Get or Set Order field
+     */
+    public function order(int $order = null): int
     {
         if ($order) {
             $this->order = $order;
@@ -248,7 +283,7 @@ class Media extends Model
         });
     }
 
-    private function resetConversions()
+    private function resetConversions(): void
     {
         $this->image['width'] = 0;
         $this->image['height'] = 0;

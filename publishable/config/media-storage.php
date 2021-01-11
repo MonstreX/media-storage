@@ -1,11 +1,22 @@
 <?php
 
 return [
+    /*
+     * Target media files path generator class.
+     */
     'url_generator' => MonstreX\MediaStorage\Services\URLGeneratorService::class,
+
+    /*
+     * Default folder name for media files and default disk
+     */
     'storage' => [
         'root' => 'media',
         'disk' => 'public',
     ],
+
+    /*
+     * Transliteration tables. Used for target media file names conversion.
+     */
     'transliterations' => [
         'ru' => [
             "А"=>"A","Б"=>"B","В"=>"V","Г"=>"G","Д"=>"D","Е"=>"E","Ж"=>"J","З"=>"Z","И"=>"I",

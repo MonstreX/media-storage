@@ -1,6 +1,6 @@
 {
     "name": "monstrex/media-storage",
-    "description": "Media Storage",
+    "description": "Laravel Media Storage",
     "license": "MIT",
     "authors": [
         {

@@ -12,31 +12,6 @@ use MonstreX\MediaStorage\Services\URLGeneratorService;
 
 class MediaStorage
 {
-
-    /*
-     * throw new Exception(__('media-storage::exception.error'));
-     *
-     * Media model fields:
-     *
-     * id - Record ID
-     * uuid - Unique Element ID (needs for identify when an Element can be moved to another Record with different ID)
-     * group_id - Unique Group ID (inside group - not unique)
-     * group_name - Group name
-     * group_order - Order num inside a group
-     * owner_model - Model class
-     * owner_id - Record id of an owner model
-     * ----- File params
-     * original_name - Original file name
-     * stored_disk - Disk where file has stored
-     * stored_path - Path of file
-     * stored_name - File name with Ext
-     * ext - Extension
-     * mime_type - File type in MIME
-     * size - File size
-     * properties - Custom properties
-     *
-     */
-
     protected ?FileService $fileService;
 
     protected ?URLGeneratorService $generator;
@@ -72,7 +47,7 @@ class MediaStorage
     /*
      * Add media file source. uploadedFile (or array of uploadedFile entries) or Path string.
      */
-    public function add($file, string $disk = 'public')
+    public function add($file, string $disk = 'public'): MediaStorage
     {
 
         if ($file instanceof UploadedFile || is_string($file)) {
@@ -91,7 +66,7 @@ class MediaStorage
     /*
      * Use to bind to certain model record.
      */
-    public function model(Model $model)
+    public function model(Model $model): MediaStorage
     {
         $this->model = $model;
         return $this;
@@ -100,7 +75,7 @@ class MediaStorage
     /*
      * Use specified disk
      */
-    public function disk(string $disk = 'local')
+    public function disk(string $disk = 'local'): MediaStorage
     {
         $this->fileService->disk($disk);
 
@@ -110,7 +85,7 @@ class MediaStorage
     /*
      * Add properties as array (can be nested)
      */
-    public function props(array $props)
+    public function props(array $props): MediaStorage
     {
         $this->props = $props;
         return $this;
@@ -119,7 +94,7 @@ class MediaStorage
     /*
      * Transliterate file names before saving files
      */
-    public function transliterate(string $lang = '')
+    public function transliterate(string $lang = ''): MediaStorage
     {
         $this->transLang = $lang;
         return $this;
@@ -128,7 +103,7 @@ class MediaStorage
     /*
      * Preserve original files
      */
-    public function preserveOriginal()
+    public function preserveOriginal(): MediaStorage
     {
         $this->preserveOriginal = true;
         return $this;
@@ -137,7 +112,7 @@ class MediaStorage
     /*
      * Replace target file if exist
      */
-    public function replaceFile()
+    public function replaceFile(): MediaStorage
     {
         $this->replaceFile = true;
         return $this;
@@ -162,7 +137,7 @@ class MediaStorage
     /*
      * Find collection by Collection ID or Collection Name (using model if present in the instance)
      */
-    public function collection($param = null)
+    public function collection($param = null): MediaStorage
     {
 
         if (is_int($param)) {
@@ -193,7 +168,7 @@ class MediaStorage
     /*
      * Retrieve ALL media entries
      */
-    public function all()
+    public function all(): Collection
     {
         $result = $this->mediaService->getMediaAll();
 
@@ -205,7 +180,7 @@ class MediaStorage
     /*
      * Remove one or more media entries (and files)
      */
-    public function delete():int
+    public function delete(): int
     {
         $result = $this->removeMediaEntries($this->get());
 
@@ -217,7 +192,7 @@ class MediaStorage
     /*
      * Remove ALL media entries (and files)
      */
-    public function deleteAll():int
+    public function deleteAll(): int
     {
         $result = $this->removeMediaEntries($this->all());
 
@@ -226,7 +201,7 @@ class MediaStorage
         return $result;
     }
 
-    private function removeMediaEntries($collection):int
+    private function removeMediaEntries($collection): int
     {
         if ($collection && count($collection) > 0) {
             foreach ($collection as $media) {
@@ -285,7 +260,7 @@ class MediaStorage
     /*
      * Reinitializing media class
      */
-    private function initMedia()
+    private function initMedia(): void
     {
         $this->files = [];
         $this->model = null;

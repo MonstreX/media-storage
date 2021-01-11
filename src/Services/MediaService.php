@@ -3,6 +3,7 @@
 namespace MonstreX\MediaStorage\Services;
 
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use MonstreX\MediaStorage\Models\Media;
 use Illuminate\Support\Collection;
 
@@ -39,17 +40,21 @@ class MediaService
         return Media::where($field, $value)->get();
     }
 
-
+    /*
+     * Delete media entry and related media file
+     */
     public function delete(Media $entry)
     {
         $entry->delete();
     }
 
+    /*
+     * Save media entry
+     */
     public function save(Media $entry)
     {
         $entry->save();
     }
-
 
     /*
      * Get certain Media Entries
