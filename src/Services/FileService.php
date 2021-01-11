@@ -31,42 +31,6 @@ class FileService
         return $this->disk;
     }
 
-    public function getFileSource($file, string $disk = 'public')
-    {
-
-        $media_file = null;
-
-        if (is_string($file)) {
-
-            $fileInfo = pathinfo($file);
-            $file_path = Storage::disk($disk)->path($file);
-            $finfo = new finfo(FILEINFO_MIME_TYPE);
-
-            if (Storage::disk($disk)->exists($file)) {
-                $media_file = new UploadedFile(
-                    $file_path,
-                    $fileInfo['basename'],
-                    $finfo->file($file_path),
-                    filesize($file_path),
-                    0,
-                    false
-                );
-            }
-
-        } elseif ($file instanceof UploadedFile) {
-            $media_file = $file;
-        }
-
-        return [
-            'sourceType' => is_string($file)? 'local': null,
-            'sourceFile' => $media_file,
-            'targetDisk' => '',
-            'targetPath' => '',
-            'targetFullPath' => '',
-            'targetFileName' => '',
-        ];
-    }
-
     public function url($path): string
     {
         return Storage::url($path);
@@ -117,6 +81,42 @@ class FileService
     {
         $media_file = new File($sourceFile);
         return $media_file->move($targetPath, $targetFileName);
+    }
+
+    public function getFileSource($file, string $disk = 'public')
+    {
+
+        $media_file = null;
+
+        if (is_string($file)) {
+
+            $fileInfo = pathinfo($file);
+            $file_path = Storage::disk($disk)->path($file);
+            $finfo = new finfo(FILEINFO_MIME_TYPE);
+
+            if (Storage::disk($disk)->exists($file)) {
+                $media_file = new UploadedFile(
+                    $file_path,
+                    $fileInfo['basename'],
+                    $finfo->file($file_path),
+                    filesize($file_path),
+                    0,
+                    false
+                );
+            }
+
+        } elseif ($file instanceof UploadedFile) {
+            $media_file = $file;
+        }
+
+        return [
+            'sourceType' => is_string($file)? 'local': null,
+            'sourceFile' => $media_file,
+            'targetDisk' => '',
+            'targetPath' => '',
+            'targetFullPath' => '',
+            'targetFileName' => '',
+        ];
     }
 
 }

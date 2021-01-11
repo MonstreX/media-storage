@@ -11,6 +11,8 @@ class MediaStorageServiceProvider extends ServiceProvider
         $this->app->singleton('media', function () {
             return new MediaStorage;
         });
+
+        $this->publishes([dirname(__DIR__).'/publishable/config/media-storage.php' => config_path('media-storage.php')],'config');
     }
 
 
@@ -19,6 +21,8 @@ class MediaStorageServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(
             dirname(__DIR__).'/publishable/config/media-storage.php', 'media-storage'
         );
+
+        $this->loadMigrationsFrom(realpath(__DIR__.'/../migrations'));
     }
 
 }

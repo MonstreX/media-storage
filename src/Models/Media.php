@@ -80,6 +80,11 @@ class Media extends Model
         return $this->fileService->url($this->path());
     }
 
+    public function fullUrl()
+    {
+        return url($this->fileService->url($this->path()));
+    }
+
     /*
      * Get path to media file. If parameters passed will generate or return conversions.
      * $media->width(300)->height(400)->format('webp')->url();

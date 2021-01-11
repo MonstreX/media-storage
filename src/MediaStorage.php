@@ -258,13 +258,14 @@ class MediaStorage
             return collect([]);
         }
 
-        $files = $this->generator->handle(
-            $this->files,
-            $this->fileService->getDisk(),
-            $this->model,
-            $this->collectionName,
-            $this->transLang,
-            $this->replaceFile
+        $files = $this->generator->handle($this->files,
+            [
+                'disk' => $this->fileService->getDisk(),
+                'model' => $this->model,
+                'collectionName' => $this->collectionName,
+                'transLang' => $this->transLang,
+                'replaceFile' => $this->replaceFile
+            ]
         );
 
         $result = $this->mediaService->create(
