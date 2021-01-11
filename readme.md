@@ -73,7 +73,7 @@ Media::id(3)->prop('setting.width');
 // Set properties
 Media::id(3)->props(['title' => 'New title'])->save();
 // Set one property
-Media::id(3)->prop('settings.width',500)->save();
+Media::id(3)->prop('settings.width', 500)->save();
 // Set order
 $collection = Media::collection('new-gallery')->get();
 $collection[0]->order(1);

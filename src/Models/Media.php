@@ -216,10 +216,11 @@ class Media extends Model
     /*
      * Get or Set Order field
      */
-    public function order(int $order = null): int
+    public function order(int $order = null)
     {
         if ($order) {
             $this->order = $order;
+            return $this;
         }
         return $this->order;
     }
@@ -253,6 +254,7 @@ class Media extends Model
         } else {
             Arr::set($array, $key, $prop_value);
             $this->props = json_encode($array);
+            return $this;
         }
     }
 
