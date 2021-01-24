@@ -16,7 +16,7 @@ class URLGeneratorService
         $this->fileService = app(FileService::class);
     }
 
-    public function handle(array $files, array $params): array
+    public function handle(array $params): array
     {
 
         $targetPath = config('media-storage.storage.root', 'media') . '/' .
@@ -24,7 +24,7 @@ class URLGeneratorService
                         date('Y') . '/'. date('m') .
                         (!empty($params['collectionName'])? '/' . $params['collectionName'] : '') ;
 
-        foreach ($files as $key => $file) {
+        foreach ($params['files'] as $key => $file) {
 
             // Get Original File Info
             $fileName = $file['sourceFile']->getClientOriginalName();
@@ -39,13 +39,13 @@ class URLGeneratorService
                 }
             }
 
-            $files[$key]['targetDisk'] = $params['disk'];
-            $files[$key]['targetPath'] = $targetPath;
-            $files[$key]['targetFullPath'] = $targetPath . '/' . $fileName;
-            $files[$key]['targetFileName'] = $fileName;
+            $params['files'][$key]['targetDisk'] = $params['disk'];
+            $params['files'][$key]['targetPath'] = $targetPath;
+            $params['files'][$key]['targetFullPath'] = $targetPath . '/' . $fileName;
+            $params['files'][$key]['targetFileName'] = $fileName;
         }
 
-        return $files;
+        return $params['files'];
     }
 
 

@@ -1,7 +1,5 @@
 # ignore jetbrains ide files
 .idea
-package-lock.json
-composer.lock
 
 # ignore dependencies
 /node_modules
